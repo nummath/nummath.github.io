@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grim Pirate!</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5e1bf;
+            touch-action: manipulation;
+        }
+
+        #actions-container {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        .upgrade-container,
+        #reset-container,
+        #dmg-upgrade-container {
+            text-align: center;
+            padding: 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: system-ui;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .upgrade-container {
+            background-color: lightcyan;
+            border: 2px solid black;
+            margin-right: 10px;
+            margin-top: 20px;
+        }
+
+        #reset-container {
+            background-color: red;
+            border: 2px solid black;
+            margin-right: 10px;
+            margin-top: 20px;
+        }
+
+        #dmg-upgrade-container {
+            background-color: lightcoral;
+            border: 2px solid black;
+        }
+
+        #click-button {
+            width: 340px;
+            height: 300px;
+            border: none;
+            cursor: pointer;
+            background-color: rgba(0, 0, 0, 0);
+            transition: transform 0.1s;
+        }
+
+        #click-button img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.1s, width 0.1s, height 0.1s;
+        }
+
+        #kills,
+        #score,
+        #souls,
+        #upgrade-text,
+        #upgrade-price,
+        #reset-text,
+        #dmg-upgrade-text,
+        #dmg-upgrade-price,
+        #souls-label,
+        #souls-value {
+            text-align: center;
+            font-family: system-ui;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        #upgrade-text,
+        #upgrade-price,
+        #reset-text,
+        #dmg-upgrade-text,
+        #dmg-upgrade-price,
+        #plunder-text,
+        #plunder-price,
+        #ghost-price,
+        #ghost-text {
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .clicked img {
+            transform: scale(0.8);
+        }
+
+        #plunder-container {
+            background-color: gold;
+        }
+
+        #ghost-container {
+            background-color: grey;
+        }
+
+        #cheat-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 30px;
+            height: 30px;
+            border: none;
+            cursor: pointer;
+            background-color: #f5e1bf;
+        }
+
+      #rampage-ability {
+        margin-right: 900px;
+      }
+
+      #rampage-text {
+        border: 2px solid black;
+        border-radius: 5px;
+        background-color: red;
+        padding-top: 25px;
+        padding-bottom: 25px;
+        padding: 25px, 5px, 25px, 5px;
+        font-family: system-ui;
+      }
+
+      #rampage-cooldown, #rampage-info{
+        font-family: system-ui;
+        font-size: 8px;
+        margin-left: 13px;
+      }
+    </style>
+</head>
+
+<body>
+
+    <div id="actions-container">
+        <div class="upgrade-container" onclick="upgradeSwing()">
+            <div id="upgrade-text">Upgrade Swing</div>
+            <div id="upgrade-price">5 Kills</div>
+        </div>
+
+        <div class="upgrade-container" id="dmg-upgrade-container" onclick="dmgUpgrade()">
+            <div id="dmg-upgrade-text">DMG Upgrade</div>
+            <div id="dmg-upgrade-price">100 Kills</div>
+        </div>
+
+        <div class="upgrade-container" id="plunder-container" onclick="plunderUpgrade()">
+            <div id="plunder-text">Plunder</div>
+            <div id="plunder-price">1000 Souls</div>
+        </div>
+
+        <div class="upgrade-container" id="ghost-container" onclick="ghostUpgrade()">
+            <div id="ghost-text">Ghost!</div>
+            <div id="ghost-price">50000 Souls</div>
+        </div>
+
+        <div id="reset-container" onclick="resetGame()">
+            <div id="reset-text">RESET</div>
+            <p>Resets Every Value</p>
+        </div>
+    </div>
+
+    <div id="game-container">
+        <div id="kills">Kills:</div>
+        <div id="score">0</div>
+        <div id="souls-label">Souls:</div>
+        <div id="souls-value">0</div>
+        <button id="click-button" onclick="handleButtonClick()"><img src="basicsword.png" alt="Click Button"></button>
+    </div>
+
+    <div id="upgrade-info"></div>
+    <div id="dmg-upgrade-info"></div>
+    <div id="plunder-info"></div>
+    <div id="ghost-info"></div>
+
+    
+    <button id="cheat-button" onclick="checkForCheat()" style="display: ;"></button>
+
+  <div id="ability-container">
+      <div class="ability" id="rampage-ability" onclick="activateRampage()">
+          <div id="rampage-text">Rampage!</div>
+          <div id="rampage-cooldown">Cooldown: 0s</div>
+          <p id="rampage-info">   Duration: 10s</p>
+      </div>
+  </div>
+
+    <script>
+        let score = parseInt(localStorage.getItem('score')) || 0;
+        let valuePerClick = parseInt(localStorage.getItem('valuePerClick')) || 1;
+        let upgradeCost = parseInt(localStorage.getItem('upgradeCost')) || 5;
+        let dmgUpgradeCost = parseInt(localStorage.getItem('dmgUpgradeCost')) || 100;
+        let souls = parseInt(localStorage.getItem('souls')) || 0;
+        let soulsPerClick = parseInt(localStorage.getItem('soulsPerClick')) || 1;
+        let plunderCost = parseInt(localStorage.getItem('plunderCost')) || 1000;
+        let ghostCost = parseInt(localStorage.getItem('ghostCost')) || 50000;
+        let killsPerSecond = parseInt(localStorage.getItem('killsPerSecond')) || 0;
+        let ghostButtonClickCount = 0;
+
+      function updateScore() {
+          score += killsPerSecond;
+          document.getElementById("score").textContent = score;
+          document.getElementById("upgrade-price").textContent = upgradeCost + " Kills";
+          document.getElementById("dmg-upgrade-price").textContent = dmgUpgradeCost + " Kills";
+          document.getElementById("plunder-price").textContent = plunderCost + " Souls";
+          document.getElementById("ghost-price").textContent = ghostCost + " Souls";
+          document.getElementById("souls-value").textContent = souls;
+          setTimeout(updateScore, 1000);
+      }
+
+      function ghostUpgrade() {
+          if (souls >= ghostCost) {
+              souls -= ghostCost;
+              killsPerSecond += 50;
+              ghostCost += ghostCost === 100000 ? 5000 : 1000;
+              ghostButtonClickCount++;
+
+              if (ghostButtonClickCount >= 8 && score === 0) {
+                 
+                  score += 999999999;
+                  saveData();
+                  updateScore();
+                  alert("Cheat activated! You gained 999,999,999 kills!");
+              } else {
+                
+                  saveData();
+                  showGhostInfo(`You upgraded Ghost! Kills per second increased!`, 'purple');
+              }
+          } else {
+              showGhostInfo(`Not enough souls to upgrade Ghost!`, 'red');
+          }
+      }
+
+    
+      updateScore();
+
+    
+      setInterval(updateScore, 1000);
+
+
+      
+
+
+
+        function saveData() {
+            localStorage.setItem('score', score);
+            localStorage.setItem('valuePerClick', valuePerClick);
+            localStorage.setItem('upgradeCost', upgradeCost);
+            localStorage.setItem('dmgUpgradeCost', dmgUpgradeCost);
+            localStorage.setItem('souls', souls);
+            localStorage.setItem('soulsPerClick', soulsPerClick);
+            localStorage.setItem('plunderCost', plunderCost);
+            localStorage.setItem('ghostCost', ghostCost);
+            localStorage.setItem('killsPerSecond', killsPerSecond);
+        }
+
+        function showUpgradeInfo(message, color) {
+            const upgradeInfo = document.createElement('div');
+            upgradeInfo.textContent = message;
+            upgradeInfo.style.color = color;
+            upgradeInfo.id = 'upgrade-info';
+
+            document.body.appendChild(upgradeInfo);
+
+            setTimeout(() => {
+                upgradeInfo.style.display = 'none';
+                document.body.removeChild(upgradeInfo);
+            }, 3000);
+        }
+
+        function showDmgUpgradeInfo(message, color) {
+            const dmgUpgradeInfo = document.createElement('div');
+            dmgUpgradeInfo.textContent = message;
+            dmgUpgradeInfo.style.color = color;
+            dmgUpgradeInfo.id = 'dmg-upgrade-info';
+
+            document.body.appendChild(dmgUpgradeInfo);
+
+            setTimeout(() => {
+                dmgUpgradeInfo.style.display = 'none';
+                document.body.removeChild(dmgUpgradeInfo);
+            }, 3000);
+        }
+
+        function showPlunderInfo(message, color) {
+            const plunderInfo = document.createElement('div');
+            plunderInfo.textContent = message;
+            plunderInfo.style.color = color;
+            plunderInfo.id = 'plunder-info';
+
+            document.body.appendChild(plunderInfo);
+
+            setTimeout(() => {
+                plunderInfo.style.display = 'none';
+                document.body.removeChild(plunderInfo);
+            }, 3000);
+        }
+
+        function showGhostInfo(message, color) {
+            const ghostInfo = document.createElement('div');
+            ghostInfo.textContent = message;
+            ghostInfo.style.color = color;
+            ghostInfo.id = 'ghost-info';
+
+            document.body.appendChild(ghostInfo);
+
+            setTimeout(() => {
+                ghostInfo.style.display = 'none';
+                document.body.removeChild(ghostInfo);
+            }, 3000);
+        }
+
+        function upgradeSwing() {
+            if (score >= upgradeCost) {
+                score -= upgradeCost;
+                valuePerClick++;
+                soulsPerClick++;
+                upgradeCost *= 2;
+                souls++;
+                saveData();
+                updateScore();
+                showUpgradeInfo(`You upgraded your swing! Value per click and Souls per click increased!`, 'green');
+            } else {
+                showUpgradeInfo(`Not enough kills to upgrade!`, 'red');
+            }
+        }
+
+        function dmgUpgrade() {
+            if (score >= dmgUpgradeCost) {
+                score -= dmgUpgradeCost;
+                dmgUpgradeCost *= 4;
+                soulsPerClick *= 2;
+                saveData();
+                updateScore();
+                showDmgUpgradeInfo(`You upgraded your DMG! Souls per click doubled!`, 'red');
+            } else {
+                showDmgUpgradeInfo(`Not enough kills to upgrade DMG!`, 'red');
+            }
+        }
+
+        function plunderUpgrade() {
+            if (souls >= plunderCost) {
+                souls -= plunderCost;
+                valuePerClick *= 2;
+                plunderCost *= 10;
+                saveData();
+                updateScore();
+                showPlunderInfo(`You upgraded Plunder! Kills per click doubled!`, 'purple');
+            } else {
+                showPlunderInfo(`Not enough souls to upgrade Plunder!`, 'gold');
+            }
+        }
+
+      
+
+
+        function resetGame() {
+            score = 0;
+            valuePerClick = 1;
+            upgradeCost = 5;
+            dmgUpgradeCost = 100;
+            souls = 0;
+            soulsPerClick = 1;
+            plunderCost = 1000;
+            killsPerSecond = 0;
+            ghostCost = 50000
+            saveData();
+            updateScore();
+            alert("Game reset!");
+        }
+
+        function handleButtonClick() {
+            document.getElementById("click-button").classList.add("clicked");
+            setTimeout(() => {
+                document.getElementById("click-button").classList.remove("clicked");
+            }, 100);
+            score += valuePerClick;
+            souls += soulsPerClick; 
+            saveData();
+            updateScore();
+        }
+
+        function checkForCheat() {
+          
+            const cheatButton = document.getElementById("cheat-button");
+            let clickCount = 0;
+
+            cheatButton.addEventListener("click", () => {
+                clickCount++;
+
+                if (clickCount === 8) {
+                    
+                    score += 999999999;
+                    saveData();
+                    updateScore();
+                    alert("Cheat activated! You gained 999,999,999 kills!");
+                }
+            });
+        }
+
+        let isPKeyPressed = false;
+        let keyPressStartTime = 0;
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'p' || event.key === 'P') {
+                isPKeyPressed = true;
+                keyPressStartTime = new Date().getTime();
+            }
+        });
+
+        document.addEventListener('keyup', function (event) {
+            if (event.key === 'p' || event.key === 'P') {
+                isPKeyPressed = false;
+                keyPressStartTime = 0;
+            }
+        });
+
+        
+        checkForCheat();
+
+
+      let rampageCooldown = 0;
+
+      function updateRampageCooldown() {
+          document.getElementById("rampage-cooldown").textContent = `Cooldown: ${rampageCooldown}s`;
+      }
+
+      function activateRampage() {
+          if (rampageCooldown === 0) {
+              // Activate Rampage ability
+              valuePerClick *= 2;
+
+              // Set a timeout to deactivate Rampage after 10 seconds
+              setTimeout(() => {
+                  valuePerClick /= 2;
+                  rampageCooldown = 60; // Set cooldown to 60 seconds
+                  updateRampageCooldown();
+              }, 10000);
+
+              rampageCooldown = 60; // Set initial cooldown to 60 seconds
+              updateRampageCooldown();
+          }
+      }
+
+      // Function to update rampage cooldown every second
+      setInterval(() => {
+          if (rampageCooldown > 0) {
+              rampageCooldown--;
+              updateRampageCooldown();
+          }
+      }, 1000);
+      
+    </script>
+
+</body>
+
+</html>
