@@ -123,9 +123,7 @@
             background-color: #f5e1bf;
         }
 
-      #rampage-ability {
-        margin-right: 900px;
-      }
+      
 
       #rampage-text {
         border: 2px solid black;
@@ -137,11 +135,42 @@
         font-family: system-ui;
       }
 
-      #rampage-cooldown, #rampage-info{
+      #jump-text {
+        border: 2px solid black;
+        border-radius: 5px;
+        padding-top: 25px;
+        padding-bottom: 25px;
+        text-alight: center;
+        padding-left: 13px;
+        padding-right: 10px;
+        background-color: blue;
+        font-family: system-ui;
+      }
+
+      #rampage-cooldown, #rampage-info, #jump-cooldown, #jump-info{
         font-family: system-ui;
         font-size: 8px;
         margin-left: 13px;
       }
+
+      #abilities-container {
+        display: flex;
+        margin-top: 20px;
+      }
+
+      .ability {
+        margin-right: 20px; /* Adjust the margin as needed */
+      }
+
+      #rampage-ability, #jump-ability {
+        /* Adjust styling for the individual abilities */
+        
+        border-radius: 5px;
+        padding: 25px 5px;
+        font-family: system-ui;
+      }
+
+
     </style>
 </head>
 
@@ -190,14 +219,23 @@
     
     <button id="cheat-button" onclick="checkForCheat()" style="display: ;"></button>
 
-  <div id="ability-container">
-      <div class="ability" id="rampage-ability" onclick="activateRampage()">
-          <div id="rampage-text">Rampage!</div>
-          <div id="rampage-cooldown">Cooldown: 0s</div>
-          <p id="rampage-info">   Duration: 10s</p>
-      </div>
-  </div>
+  <div id="abilities-container">
 
+    <div id="ability-container">
+      <div class="ability" id="rampage-ability" onclick="activateRampage()">
+        <div id="rampage-text">Rampage!</div>
+        <div id="rampage-cooldown">Cooldown: 0s</div>
+        <p id="rampage-info">   Duration: 10s</p>
+      </div>
+    </div>
+
+    <div class="ability" id="jump-ability" onclick="activateJump()">
+      <div id="jump-text">Jump!</div>
+      <div id="jump-cooldown">Cooldown: 0s</div>
+      <p id="jump-info">Instant</p>
+    </div>
+
+  </div>
     <script>
         let score = parseInt(localStorage.getItem('score')) || 0;
         let valuePerClick = parseInt(localStorage.getItem('valuePerClick')) || 1;
@@ -432,7 +470,7 @@
         checkForCheat();
 
 
-      let rampageCooldown = 0;
+      let rampageCooldown = 60;
 
       function updateRampageCooldown() {
           document.getElementById("rampage-cooldown").textContent = `Cooldown: ${rampageCooldown}s`;
@@ -455,13 +493,61 @@
           }
       }
 
-      // Function to update rampage cooldown every second
+      
+
+
+      let jumpCooldown = 120;
+
+      function updateJumpCooldown() {
+          document.getElementById("jump-cooldown").textContent = `Cooldown: ${jumpCooldown}s`;
+      }
+
+      function activateJump() {
+          if (jumpCooldown === 0) {
+              // Calculate 10% of kills
+              const jumpAmount = Math.ceil(0.1 * score);
+
+              // Add the calculated amount to the score
+              score += jumpAmount;
+
+              // Set a timeout to reset the cooldown after 120 seconds
+              setTimeout(() => {
+                  jumpCooldown = 120;
+                  updateJumpCooldown();
+              }, 120000);
+
+              jumpCooldown = 120; // Set initial cooldown to 120 seconds
+              updateJumpCooldown();
+              updateScore(); // Update the displayed score
+          }
+      }
+
+      
+
+      
+
+      function updateRampageCooldown() {
+          document.getElementById("rampage-cooldown").textContent = `Cooldown: ${rampageCooldown}s`;
+      }
+
+      function updateJumpCooldown() {
+          document.getElementById("jump-cooldown").textContent = `Cooldown: ${jumpCooldown}s`;
+      }
+
       setInterval(() => {
+          // Update rampage cooldown
           if (rampageCooldown > 0) {
               rampageCooldown--;
               updateRampageCooldown();
           }
+
+          // Update jump cooldown
+          if (jumpCooldown > 0) {
+              jumpCooldown--;
+              updateJumpCooldown();
+          }
       }, 1000);
+
       
     </script>
 
