@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>CHAMPIONSHIP</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: system-ui;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .player-container {
+            margin: 20px;
+        }
+
+        button {
+            font-size: 16px;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            background-color: black;
+            margin-right: 25px;
+            margin-left: 25px;
+        }
+
+        .up {
+            text-align: center;
+            background-color: black;
+            border-radius: 15px;
+        }
+
+        h1 {
+          color: red;
+          text-align: center;
+        }
+
+        h2 {
+          color: cyan;
+          text-align: center;
+        }
+
+        h3 {
+          color: #ADD8E6;
+          text-align: center;
+        }
+
+        .big {
+        font-size: 85px;
+        color: cyan;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .info {
+        color: black;
+        padding: 0px 20px 0px 20px;
+    }
+
+    a.centered-link {
+        font-size: 35px;
+        color: black;
+        text-align: center;
+        font-weight: bold;
+        text-decoration: false;
+        background-color: white;
+        border-radius: 7px;
+        font-family: system-ui;
+        display: block;
+        margin: 0 auto; 
+        width: fit-content; 
+        padding: 10px;
+    }
+
+    .special {
+        color: black;
+    }
+    </style>
+</head>
+<body>
+<div>
+<p class="big">
+ THE WINNER IS...
+  <p>
+    <div class="container up">
+        <div class="player-container">
+            <h2 class="special">Current Score: <span id="globalScore">0</span></h2>
+            <button id="incrementGlobalBtn">↑</button>
+            <button id="resetGlobalBtn">↺</button>
+        </div>
+    </div>
+    
+<div class="container up">
+    <div class="player-container">
+        <h2>Player One Score: <span id="playerOneScore">0</span></h2>
+        <button id="incrementPlayerOneBtn">↑</button>
+        <button id="resetPlayerOneBtn">↺</button>
+    </div>
+</div>
+
+<div class="container up">
+    <div class="player-container">
+        <h2>Player Two Score: <span id="playerTwoScore">0</span></h2>
+        <button id="incrementPlayerTwoBtn">↑</button>
+        <button id="resetPlayerTwoBtn">↺</button>
+    </div>
+</div>
+
+<div class="container up">
+  <div class="player-container">
+      <h2>Player Three Score: <span id="playerThreeScore">0</span></h2>
+      <button id="incrementPlayerThreeBtn">↑</button>
+      <button id="resetPlayerThreeBtn">↺</button>
+  </div>
+</div>
+
+<div class="container up">
+  <div class="player-container">
+      <h2>Player Four Score: <span id="playerFourScore">0</span></h2>
+      <button id="incrementPlayerFourBtn">↑</button>
+      <button id="resetPlayerFourBtn">↺</button>
+  </div>
+</div>
+
+
+<h2>
+GOOD JOB! ~ HOPE YOU ENJOYED!
+</h2>
+<br>
+<a href='ball.html' class='centered-link'> RESTART! (DONT FORGET TO CLEAR COOKIES!)</a>
+
+<div>
+
+  
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let playerOneScore = parseInt(localStorage.getItem("playerOneScore")) || 0;
+        let playerTwoScore = parseInt(localStorage.getItem("playerTwoScore")) || 0;
+        let globalScore = 0;
+
+        const playerOneScoreElement = document.getElementById("playerOneScore");
+        const playerTwoScoreElement = document.getElementById("playerTwoScore");
+        const globalScoreElement = document.getElementById("globalScore");
+
+        const incrementPlayerOneBtn = document.getElementById("incrementPlayerOneBtn");
+        const resetPlayerOneBtn = document.getElementById("resetPlayerOneBtn");
+
+        const incrementPlayerTwoBtn = document.getElementById("incrementPlayerTwoBtn");
+        const resetPlayerTwoBtn = document.getElementById("resetPlayerTwoBtn");
+
+        const incrementGlobalBtn = document.getElementById("incrementGlobalBtn");
+        const resetGlobalBtn = document.getElementById("resetGlobalBtn");
+        
+        let playerThreeScore = parseInt(localStorage.getItem("playerThreeScore")) || 0;
+        let playerFourScore = parseInt(localStorage.getItem("playerFourScore")) || 0;
+
+        const playerThreeScoreElement = document.getElementById("playerThreeScore");
+        const playerFourScoreElement = document.getElementById("playerFourScore");
+
+        const incrementPlayerThreeBtn = document.getElementById("incrementPlayerThreeBtn");
+        const resetPlayerThreeBtn = document.getElementById("resetPlayerThreeBtn");
+
+        const incrementPlayerFourBtn = document.getElementById("incrementPlayerFourBtn");
+        const resetPlayerFourBtn = document.getElementById("resetPlayerFourBtn");
+
+        function updateScores() {
+            playerOneScoreElement.textContent = playerOneScore;
+            playerTwoScoreElement.textContent = playerTwoScore;
+            globalScoreElement.textContent = globalScore;
+
+            localStorage.setItem("playerOneScore", playerOneScore);
+            localStorage.setItem("playerTwoScore", playerTwoScore);
+
+            playerThreeScoreElement.textContent = playerThreeScore;
+            playerFourScoreElement.textContent = playerFourScore;
+            localStorage.setItem("playerThreeScore", playerThreeScore);
+            localStorage.setItem("playerFourScore", playerFourScore);
+        }
+
+        incrementPlayerOneBtn.addEventListener("click", function () {
+            playerOneScore++;
+            updateScores();
+        });
+
+        resetPlayerOneBtn.addEventListener("click", function () {
+            playerOneScore = 0;
+            updateScores();
+        });
+
+        incrementPlayerTwoBtn.addEventListener("click", function () {
+            playerTwoScore++;
+            updateScores();
+        });
+
+        resetPlayerTwoBtn.addEventListener("click", function () {
+            playerTwoScore = 0;
+            updateScores();
+        });
+
+        incrementGlobalBtn.addEventListener("click", function () {
+            globalScore++;
+            updateScores();
+        });
+
+        resetGlobalBtn.addEventListener("click", function () {
+            globalScore = 0;
+            updateScores();
+        });
+
+        incrementPlayerThreeBtn.addEventListener("click", function () {
+            playerThreeScore++;
+            updateScores();
+        });
+
+        resetPlayerThreeBtn.addEventListener("click", function () {
+            playerThreeScore = 0;
+            updateScores();
+        });
+
+        incrementPlayerFourBtn.addEventListener("click", function () {
+            playerFourScore++;
+            updateScores();
+        });
+
+        resetPlayerFourBtn.addEventListener("click", function () {
+            playerFourScore = 0;
+            updateScores();
+        });
+
+        updateScores();
+    });
+</script>
+</body>
+</html>
